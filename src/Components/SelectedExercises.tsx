@@ -1,17 +1,23 @@
 import React from "react";
-import { FlatList } from "react-native";
 import useStore from "./Store";
 import { Button, Card, Text, YStack } from "tamagui";
 import { router } from "expo-router";
+import { FlashList } from "@shopify/flash-list";
 
 const SelectedExercises = () => {
   const selectedExercises = useStore((state) => state.selectedExercises);
   const removeExercise = useStore((state) => state.removeExercise);
   const saveExercises = useStore((state) => state.saveExercises);
-
+  const setModal = useStore((state) => state.setModal);
+  const clearAllExercises = useStore((state) => state.clearAllExercises);
   const cardComponent = ({ item }) => (
-    <Card bg={"$blue5Dark"} onPress={() => handleItemPress(item)}>
-      <Text>{item.name}</Text>
+    <Card
+      alignItems="center"
+      margin={"$2.5"}
+      bg={"$purple6Light"}
+      onPress={() => handleItemPress(item)}
+    >
+      <Text margin={"$2.5"}>{item.name}</Text>
     </Card>
   );
 
@@ -20,17 +26,20 @@ const SelectedExercises = () => {
   };
   const handleSave = () => {
     saveExercises();
-    router.navigate("SelectionStack/two");
+    setModal(false);
+    router.push("/two");
+    clearAllExercises();
   };
   return (
-    <YStack>
-      <FlatList
+    <>
+      <FlashList
         data={selectedExercises}
         keyExtractor={(item) => item.id + item.counter}
         renderItem={cardComponent}
+        estimatedItemSize={10}
       />
       <Button onPress={handleSave}>save</Button>
-    </YStack>
+    </>
   );
 };
 

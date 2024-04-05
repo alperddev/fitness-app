@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import { db } from "../app/SelectionStack";
+import * as SQLite from "expo-sqlite";
+export const db = SQLite.openDatabase("exercises.db");
+
 interface Exercise {
   id: string;
   name: string;
@@ -14,9 +16,16 @@ interface StoreState {
   clearAllExercises: () => void;
   saveExercises: () => void;
   clearDatabase: () => void;
+  modal: boolean;
+  setModal: (as: boolean) => void;
+  loopLength: number[];
+  setLoopLength: (as: number[]) => void;
 }
 const useStore = create<StoreState>((set, get) => ({
   selectedExercises: [],
+  modal: false,
+  loopLength: [7],
+  setLoopLength: (as: number[]) => set(() => ({ loopLength: as })),
   addExercise: (exercise) =>
     set((state) => {
       const existingExercise = state.selectedExercises.reduce((acc, ex) => {
@@ -77,12 +86,12 @@ const useStore = create<StoreState>((set, get) => ({
       db.transaction((tx) => {
         tx.executeSql("DELETE FROM exercises");
       });
-      // Reset the store's state
       set({ selectedExercises: [] });
     } catch (error) {
       console.error("Error in clearDatabase:", error);
     }
   },
+  setModal: (as: boolean) => set(() => ({ modal: as })),
 }));
 
 export default useStore;

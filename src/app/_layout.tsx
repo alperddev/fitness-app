@@ -3,15 +3,7 @@ import { TamaguiProvider } from "tamagui";
 import { SplashScreen, Stack, Tabs } from "expo-router";
 import { useFonts } from "expo-font";
 import config from "../tamagui.config";
-import { Slot, Redirect, Navigator } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
 SplashScreen.preventAutoHideAsync();
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} {...props} />;
-}
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -29,31 +21,20 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config}>
-      <Tabs
+      <Stack
         screenOptions={{
-          tabBarActiveTintColor: "white",
-          tabBarStyle: {
-            borderTopWidth: 0,
+          headerStyle: {
             backgroundColor: "black",
           },
-          tabBarHideOnKeyboard: true,
+          headerTitleStyle: {
+            color: "white",
+          },
         }}
       >
-        <Tabs.Screen
-          name="SelectionStack"
-          options={{
-            title: "Tab One",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="SelectionStack copy"
-          options={{
-            title: "Tab One",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-      </Tabs>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="selection" />
+        <Stack.Screen name="two" />
+      </Stack>
     </TamaguiProvider>
   );
 }
