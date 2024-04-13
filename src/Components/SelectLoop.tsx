@@ -1,5 +1,5 @@
 import React from "react";
-import useStore from "./Store";
+import useStore from "../providers/Store";
 import { Card, Slider, Text, YStack } from "tamagui";
 
 export default function Loop() {
@@ -18,6 +18,7 @@ export default function Loop() {
         <Text margin={"$2.5"}>{loopLength}</Text>
       </Card>
       <Slider
+        value={loopLength}
         onValueChange={(value: number[]) => setLoopLength(value)}
         defaultValue={[7]}
         max={30}
@@ -31,7 +32,6 @@ export default function Loop() {
         </Slider.Track>
         <Slider.Thumb circular index={0} />
       </Slider>
-      <Text>{loopLength}</Text>
     </YStack>
   );
 }

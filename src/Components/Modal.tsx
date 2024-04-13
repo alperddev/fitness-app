@@ -3,7 +3,7 @@ import type { SheetProps } from "@tamagui/sheet";
 import { Sheet } from "@tamagui/sheet";
 import { useState } from "react";
 import { Button, H2, Input, Paragraph, XStack, YStack } from "tamagui";
-import useStore from "./Store";
+import useStore from "../providers/Store";
 import ExerciseList from "./ExerciseList";
 import SelectedExercises from "./SelectedExercises";
 

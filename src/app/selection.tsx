@@ -1,6 +1,6 @@
 import React from "react";
-import ExerciseList from "../Components/ExerciseList";
-import SelectedExercises from "../Components/SelectedExercises";
+import ExerciseList from "../components/ExerciseList";
+import SelectedExercises from "../components/SelectedExercises";
 
 export default function App() {
   return (

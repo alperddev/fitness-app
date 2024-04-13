@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 import { TamaguiProvider } from "tamagui";
-import { SplashScreen, Stack, Tabs } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import config from "../tamagui.config";
+import { ThemeProvider, DarkTheme } from "@react-navigation/native";
+import RealmCustomProvider from "../providers/Realm";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -20,21 +23,27 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <TamaguiProvider config={config}>
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "black",
-          },
-          headerTitleStyle: {
-            color: "white",
-          },
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="selection" />
-        <Stack.Screen name="two" />
-      </Stack>
-    </TamaguiProvider>
+    <RealmCustomProvider>
+      <ThemeProvider value={DarkTheme}>
+        <TamaguiProvider config={config}>
+          <Stack
+            screenOptions={{
+              statusBarStyle: "light",
+              statusBarColor: "black",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTitleStyle: {
+                color: "white",
+              },
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="selection" />
+            <Stack.Screen name="two" />
+          </Stack>
+        </TamaguiProvider>
+      </ThemeProvider>
+    </RealmCustomProvider>
   );
 }

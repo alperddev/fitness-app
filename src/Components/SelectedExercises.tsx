@@ -1,44 +1,59 @@
 import React from "react";
-import useStore from "./Store";
-import { Button, Card, Text, YStack } from "tamagui";
+import useStore from "../providers/Store";
+import { Button, Card, Text } from "tamagui";
 import { router } from "expo-router";
-import { FlashList } from "@shopify/flash-list";
+import { useQuery, useRealm } from "@realm/react";
+import { Exercise, Workout } from "../models/Exercise";
+import { FlatList } from "react-native";
 
 const SelectedExercises = () => {
-  const selectedExercises = useStore((state) => state.selectedExercises);
-  const removeExercise = useStore((state) => state.removeExercise);
-  const saveExercises = useStore((state) => state.saveExercises);
   const setModal = useStore((state) => state.setModal);
-  const clearAllExercises = useStore((state) => state.clearAllExercises);
-  const cardComponent = ({ item }) => (
+  const realm = useRealm();
+  const exercisesRealm = useQuery(Exercise);
+  const deleteExercise = (exercise) => {
+    realm.write(() => {
+      realm.delete(exercise);
+    });
+  };
+  const saveExercisesToWorkout = () => {
+    const workout = {
+      name: "My Workout",
+      exercises: [],
+    };
+    realm.write(() => {
+      realm.create(Workout, workout);
+    });
+    const selectedExercises = realm.objects(Exercise);
+    realm.write(() => {
+      workout.exercises.push(...selectedExercises);
+    });
+  };
+
+  const handleSave = () => {
+    saveExercisesToWorkout();
+    setModal(false);
+    router.push("/two");
+  };
+
+  const renderExerciseCard = ({ item }) => (
     <Card
       alignItems="center"
       margin={"$2.5"}
-      bg={"$purple6Light"}
-      onPress={() => handleItemPress(item)}
+      bg={"$blue5"}
+      onPress={() => deleteExercise(item)}
     >
       <Text margin={"$2.5"}>{item.name}</Text>
     </Card>
   );
 
-  const handleItemPress = (item) => {
-    removeExercise(item);
-  };
-  const handleSave = () => {
-    saveExercises();
-    setModal(false);
-    router.push("/two");
-    clearAllExercises();
-  };
   return (
     <>
-      <FlashList
-        data={selectedExercises}
-        keyExtractor={(item) => item.id + item.counter}
-        renderItem={cardComponent}
-        estimatedItemSize={10}
+      <FlatList
+        data={exercisesRealm}
+        renderItem={renderExerciseCard}
+        keyExtractor={(item) => item._id}
       />
-      <Button onPress={handleSave}>save</Button>
+      <Button onPress={handleSave}>Save Workout</Button>
     </>
   );
 };

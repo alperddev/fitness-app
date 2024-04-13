@@ -12,6 +12,8 @@ module.exports = function (api) {
           disableExtraction: process.env.NODE_ENV === "development",
         },
       ],
+      "@realm/babel-plugin",
+      ["@babel/plugin-proposal-decorators", { legacy: true }],
     ],
   };
 };
