@@ -3,6 +3,7 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
+      ["@babel/plugin-proposal-decorators", { legacy: true }],
       [
         "@tamagui/babel-plugin",
         {
@@ -12,8 +13,6 @@ module.exports = function (api) {
           disableExtraction: process.env.NODE_ENV === "development",
         },
       ],
-      "@realm/babel-plugin",
-      ["@babel/plugin-proposal-decorators", { legacy: true }],
     ],
   };
 };

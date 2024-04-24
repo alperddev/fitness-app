@@ -1,35 +1,36 @@
-import React from "react";
-import { Button, Card, Text } from "tamagui";
-import { FlashList } from "@shopify/flash-list";
+import React, { useState } from "react";
+import { Card, Text, YStack } from "tamagui";
 import { Data } from "../providers/Data";
-import { useRealm } from "@realm/react";
-import { Exercise, Workout } from "../models/Exercise";
+import useStore from "../providers/Store";
+import { FlatList } from "react-native";
 
 export default function ExerciseList() {
-  const realm = useRealm();
-
-  const handleItemPress = (item) => {
-    saveExercises(item);
-  };
-
-  function saveExercises(item) {
-    try {
-      realm.write(() => {
-        realm.create(Exercise, {
-          name: item.name,
-        });
-      });
-    } catch (error) {
-      console.error("Error in saveExercises:", error);
+  const [selected, setSelected] = useState([]);
+  const handlePress = (item) => {
+    if (selected.includes(item)) {
+      setSelected(selected.filter((i) => i !== item));
+    } else {
+      setSelected([...selected, item]);
     }
-  }
-
+  };
+  // const { addExercise, selectedExercises, removeExercise } = useStore();
+  // const handlePress = (item) => {
+  //   if (selectedExercises.includes(item)) {
+  //     removeExercise(item);
+  //   } else {
+  //     addExercise(item);
+  //   }
+  // };
   const ExerciseListCard = ({ item }) => {
     return (
       <Card
+        pressStyle={{ bg: "$green9" }}
+        bg={selected.includes(item) ? "$green9" : "$backgroundHover"}
+        onPress={() => {
+          handlePress(item);
+        }}
         key={item.id}
         borderRadius={10}
-        onPress={() => handleItemPress(item)}
         alignItems="center"
         margin={"$2.5"}
       >
@@ -39,13 +40,12 @@ export default function ExerciseList() {
   };
 
   return (
-    <>
-      <FlashList
+    <YStack>
+      <FlatList
         data={Data}
         renderItem={({ item }) => <ExerciseListCard item={item} />}
-        estimatedItemSize={50}
         keyExtractor={(item) => item.id}
       />
-    </>
+    </YStack>
   );
 }

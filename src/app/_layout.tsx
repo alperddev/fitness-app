@@ -1,18 +1,32 @@
-import React, { useEffect } from "react";
-import { TamaguiProvider } from "tamagui";
-import { SplashScreen, Stack } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import config from "../tamagui.config";
-import { ThemeProvider, DarkTheme } from "@react-navigation/native";
-import RealmCustomProvider from "../providers/Realm";
+import { Slot, Stack, Tabs } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 
+import config from "../tamagui.config";
+import { TamaguiProvider } from "tamagui";
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from "expo-router";
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+    SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
+    ...FontAwesome.font,
   });
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   useEffect(() => {
     if (loaded) {
@@ -20,30 +34,21 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!loaded) {
+    return null;
+  }
 
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
   return (
-    <RealmCustomProvider>
-      <ThemeProvider value={DarkTheme}>
-        <TamaguiProvider config={config}>
-          <Stack
-            screenOptions={{
-              statusBarStyle: "light",
-              statusBarColor: "black",
-              headerStyle: {
-                backgroundColor: "black",
-              },
-              headerTitleStyle: {
-                color: "white",
-              },
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="selection" />
-            <Stack.Screen name="two" />
-          </Stack>
-        </TamaguiProvider>
-      </ThemeProvider>
-    </RealmCustomProvider>
+    <ThemeProvider value={DarkTheme}>
+      <TamaguiProvider config={config}>
+        <Stack>
+          <Stack.Screen name="(tabs)" />.
+        </Stack>
+      </TamaguiProvider>
+    </ThemeProvider>
   );
 }

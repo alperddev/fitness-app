@@ -3491,4 +3491,4 @@ export const Data = [
     id: "Zottman_Preacher_Curl",
     name: "Zottman Preacher Curl",
   },
-]
+];

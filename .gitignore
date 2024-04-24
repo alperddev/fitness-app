@@ -1,8 +1,7 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-android/
-.tamagui/
-/package-lock.json
+.tamagui
+android
+ios
 # dependencies
 node_modules/
 

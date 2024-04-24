@@ -1,8 +1,15 @@
-import { ChevronDown, ChevronUp } from "@tamagui/lucide-icons";
-import type { SheetProps } from "@tamagui/sheet";
-import { Sheet } from "@tamagui/sheet";
+// import { ChevronDown, ChevronUp } from "@tamagui/lucide-icons";
 import { useState } from "react";
-import { Button, H2, Input, Paragraph, XStack, YStack } from "tamagui";
+import {
+  Button,
+  H2,
+  Input,
+  Paragraph,
+  XStack,
+  YStack,
+  Sheet,
+  SheetProps,
+} from "tamagui";
 import useStore from "../providers/Store";
 import ExerciseList from "./ExerciseList";
 import SelectedExercises from "./SelectedExercises";
@@ -12,14 +19,14 @@ export default function Modal() {
   const modal = useStore((state) => state.modal);
   const setModal = useStore((state) => state.setModal);
 
-  const snapPoints = [90];
+  const snapPoints = [95];
 
   function InnerSheet(props: SheetProps) {
     return (
       <Sheet
         animation="bouncy"
         modal
-        snapPoints={[90]}
+        snapPoints={[95]}
         dismissOnSnapToBottom
         {...props}
       >
@@ -43,7 +50,7 @@ export default function Modal() {
                 size="$6"
                 circular
                 alignSelf="center"
-                icon={ChevronDown}
+                // icon={ChevronDown}
                 onPress={() => props.onOpenChange?.(false)}
               />
 
@@ -96,20 +103,24 @@ export default function Modal() {
           <Button
             size="$6"
             circular
-            icon={ChevronDown}
+            // icon={ChevronDown}
             onPress={() => setModal(false)}
           />
           <XStack flex={1}>
             <YStack flex={1} bg={"$background"}>
-              <ExerciseList />
-              <SelectedExercises />
+              <YStack height={200}>
+                <ExerciseList />
+              </YStack>
+              {/* <YStack height={200}>
+                <SelectedExercises />
+              </YStack> */}
               <InnerSheet open={innerOpen} onOpenChange={setInnerOpen} />
             </YStack>
           </XStack>
           <Button
             size="$6"
             circular
-            icon={ChevronUp}
+            // icon={ChevronUp}
             onPress={() => setInnerOpen(true)}
           />
         </Sheet.Frame>
