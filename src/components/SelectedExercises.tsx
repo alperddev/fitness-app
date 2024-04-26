@@ -4,7 +4,7 @@ import { Card, Text } from "tamagui";
 import { FlatList } from "react-native";
 import useStore from "../providers/Store";
 
-export default function ExerciseList() {
+export default function selectedExercises() {
   const { selectedExercises, removeExercise } = useStore();
 
   const SelectedExerciseListCard = ({ item }) => {

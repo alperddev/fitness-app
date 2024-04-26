@@ -111,9 +111,6 @@ export default function Modal() {
               <YStack height={200}>
                 <ExerciseList />
               </YStack>
-              {/* <YStack height={200}>
-                <SelectedExercises />
-              </YStack> */}
               <InnerSheet open={innerOpen} onOpenChange={setInnerOpen} />
             </YStack>
           </XStack>

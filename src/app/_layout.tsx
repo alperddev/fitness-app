@@ -46,7 +46,8 @@ function RootLayoutNav() {
     <ThemeProvider value={DarkTheme}>
       <TamaguiProvider config={config}>
         <Stack>
-          <Stack.Screen name="(tabs)" />.
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="workouts" />
         </Stack>
       </TamaguiProvider>
     </ThemeProvider>
