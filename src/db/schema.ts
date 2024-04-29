@@ -5,10 +5,17 @@ export default appSchema({
   version: 1,
   tables: [
     tableSchema({
-      name: "posts",
+      name: "workouts",
       columns: [
-        { name: "title", type: "string" },
-        { name: "is_pinned", type: "boolean" },
+        { name: "name", type: "string" },
+        { name: "loopLength", type: "number" },
+      ],
+    }),
+    tableSchema({
+      name: "exercises",
+      columns: [
+        { name: "name", type: "string" },
+        { name: "workout_id", type: "string", isIndexed: true },
       ],
     }),
   ],

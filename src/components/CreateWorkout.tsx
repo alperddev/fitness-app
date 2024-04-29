@@ -1,52 +1,80 @@
 import React, { useState } from "react";
-import { YStack, Text, Input, Button, Slider } from "tamagui";
 import useStore from "../providers/Store";
-import { FlatList } from "react-native";
+import {
+  FlatList,
+  View,
+  Text,
+  TextInput,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+import Slider from "@react-native-community/slider";
+
+import * as Crypto from "expo-crypto";
+import { router } from "expo-router";
 export default function CreateWorkout() {
-  const { addWorkout, selectedExercises, removeExercise, workouts } =
+  const UUID = Crypto.randomUUID();
+
+  const { workouts, addWorkout, setModal, setSelectedWorkout, removeWorkout } =
     useStore();
-  const [workoutName, setWorkoutName] = useState("");
-  const [loopLength, setLoopLength] = useState([7]);
-  const handleAddWorkout = () => {
-    addWorkout({
-      id: Date.now().toString(),
-      name: workoutName,
-      exercises: [],
-      loopLength: loopLength[0],
-    });
-  };
+  const [workout, setWorkout] = useState({
+    id: UUID,
+    name: "",
+    loopLength: 7,
+    exercises: [],
+  });
+
+  function handleNameChange(name: string) {
+    setWorkout({ ...workout, name: name });
+  }
+  function handleLoopLengthChange(loopLength: number) {
+    setWorkout({ ...workout, loopLength: loopLength });
+  }
+  function handleAddWorkout() {
+    addWorkout(workout);
+    setSelectedWorkout(workout);
+    router.push("/workouts/two");
+  }
   return (
-    <YStack flex={1}>
-      <Text>Create Workout</Text>
-      <Input
-        value={workoutName}
-        onChangeText={setWorkoutName}
+    <View style={{ flex: 1 }}>
+      <TextInput
+        style={{
+          borderColor: "white",
+          color: "white",
+          padding: 10,
+          borderWidth: 1,
+          borderRadius: 10,
+        }}
+        value={workout.name}
+        onChangeText={(value) => handleNameChange(value)}
         placeholder="Workout Name"
       />
       <Slider
-        marginVertical="$10"
-        value={loopLength}
-        onValueChange={(value: number[]) => setLoopLength(value)}
-        size="$4"
-        width={200}
-        defaultValue={[7]}
-        max={100}
+        value={workout.loopLength}
+        onValueChange={(value) => handleLoopLengthChange(value)}
         step={1}
-      >
-        <Slider.Track>
-          <Slider.TrackActive />
-        </Slider.Track>
-        <Slider.Thumb circular index={0} />
-      </Slider>
-      <Button onPress={handleAddWorkout}>Add Workout</Button>
+        minimumValue={1}
+        maximumValue={30}
+      />
+
+      <Button title="Add Workout" onPress={handleAddWorkout} />
       <FlatList
         data={workouts}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Text>
-            {item.name}, {item.loopLength}
-          </Text>
+          <TouchableOpacity onPress={() => removeWorkout(item)}>
+            <Text style={{ color: "white" }}>{item.name}</Text>
+            <Text style={{ color: "white" }}>{item.loopLength}</Text>
+            <FlatList
+              data={item.exercises}
+              renderItem={({ item }) => (
+                <Text style={{ color: "white" }}>{item.name}</Text>
+              )}
+            />
+            <Text style={{ color: "white" }}>{item.id}</Text>
+          </TouchableOpacity>
         )}
       />
-    </YStack>
+    </View>
   );
 }

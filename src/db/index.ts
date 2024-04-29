@@ -1,10 +1,10 @@
-import { Platform } from "react-native";
 import { Database } from "@nozbe/watermelondb";
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
 
 import schema from "./schema";
 import migrations from "./migrations";
-import Post from "./model/Post";
+import Workouts from "./model/Workout";
+import Exercises from "./model/Exercises";
 // import Post from './model/Post' // ⬅️ You'll import your Models here
 
 // First, create the adapter to the underlying database:
@@ -26,7 +26,7 @@ const adapter = new SQLiteAdapter({
 // Then, make a Watermelon database from it!
 const database = new Database({
   adapter,
-  modelClasses: [Post],
+  modelClasses: [Workouts, Exercises],
 });
 export default database;
 // const onRead = async () => {

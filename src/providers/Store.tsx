@@ -16,15 +16,17 @@ interface StoreState {
   selectedExercises: Exercise[];
   workouts: Workout[];
   selectedWorkout: Workout | null;
-  selectWorkout: (workout: Workout) => void;
+  modal: boolean;
+  loopLength: number;
   addWorkout: (workout: Workout) => void;
   removeWorkout: (workout: Workout) => void;
-  modal: boolean;
   setModal: (as: boolean) => void;
-  loopLength: number[];
-  setLoopLength: (as: number[]) => void;
+  setLoopLength: (as: number) => void;
+  setSelectedWorkout: (workout: Workout | null) => void;
   addExercise: (exercise: Exercise) => void;
   removeExercise: (exercise: Exercise) => void;
+  setWorkouts: (workout: Workout) => void;
+  setWorkout: (workout: Workout) => void;
 }
 
 const useStore = create<StoreState>((set, get) => ({
@@ -32,8 +34,8 @@ const useStore = create<StoreState>((set, get) => ({
   selectedExercises: [],
   selectedWorkout: null,
   modal: false,
-  loopLength: [7],
-  setLoopLength: (as: number[]) => set(() => ({ loopLength: as })),
+  loopLength: 7,
+  setLoopLength: (as: number) => set(() => ({ loopLength: as })),
   setModal: (as: boolean) => set(() => ({ modal: as })),
   addExercise: (exercise: Exercise) =>
     set((state) => ({
@@ -49,8 +51,17 @@ const useStore = create<StoreState>((set, get) => ({
     set((state) => ({
       workouts: state.workouts.filter((w) => w.id !== workout.id),
     })),
-  selectWorkout: (workout: Workout) =>
+
+  setWorkouts: (workout: Workout) =>
+    set((state) => ({
+      workouts: state.workouts.map((w) => (w.id === workout.id ? workout : w)),
+    })),
+  setSelectedWorkout: (workout: Workout) =>
     set(() => ({ selectedWorkout: workout })),
+  setWorkout: (workout: Workout) =>
+    set((state) => ({
+      workouts: state.workouts.map((w) => (w.id === workout.id ? workout : w)),
+    })),
 }));
 
 export default useStore;
