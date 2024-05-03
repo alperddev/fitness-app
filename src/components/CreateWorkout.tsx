@@ -15,7 +15,7 @@ import { router } from "expo-router";
 export default function CreateWorkout() {
   const UUID = Crypto.randomUUID();
 
-  const { workouts, addWorkout, setModal, setSelectedWorkout, removeWorkout } =
+  const { workouts, addWorkout, setSelectedWorkout, removeWorkout } =
     useStore();
   const [workout, setWorkout] = useState({
     id: UUID,

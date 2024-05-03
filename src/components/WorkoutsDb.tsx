@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, View, Text, Button, TouchableOpacity } from "react-native";
 import database from "../db";
+import Workout from "../db/model/Workout";
 export default function WorkoutsDb() {
   const [workouts, setWorkouts] = useState([]);
   const [exercises, setExercises] = useState([]);
   const onRead = async () => {
-    const workoutsCollection = database.get("workouts");
+    const workoutsCollection = database.get<Workout>("workouts");
     const workouts = await workoutsCollection.query().fetch();
     setWorkouts(workouts);
-    const exercisesCollection = database.get("exercises");
-    const exercises = await exercisesCollection.query().fetch();
-    setExercises(exercises);
   };
+
+  function removeWorkout() {}
+
   useEffect(() => {
     onRead();
   }, []);
@@ -21,13 +22,9 @@ export default function WorkoutsDb() {
       <FlatList
         data={workouts}
         renderItem={({ item }) => (
-          <Text style={{ color: "white" }}>{item.name}</Text>
-        )}
-      />
-      <FlatList
-        data={exercises}
-        renderItem={({ item }) => (
-          <Text style={{ color: "white" }}>{item.name}</Text>
+          <TouchableOpacity onPress={() => console.log(item)}>
+            <Text style={{ color: "white" }}>{item.name}</Text>
+          </TouchableOpacity>
         )}
       />
     </View>

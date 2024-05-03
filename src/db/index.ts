@@ -29,18 +29,3 @@ const database = new Database({
   modelClasses: [Workouts, Exercises],
 });
 export default database;
-// const onRead = async () => {
-//   const postsCollection = database.get("posts");
-//   const posts = await postsCollection.query().fetch();
-//   console.log(posts);
-// };
-// const onWrite = async () => {
-//   const postsCollection = database.get("posts");
-
-//   await database.write(async () => {
-//     await postsCollection.create((post) => {
-//       post.title = "test";
-//       post.isPinned = false;
-//     });
-//   });
-// };

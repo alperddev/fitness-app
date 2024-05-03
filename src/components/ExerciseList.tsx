@@ -1,14 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Data } from "../providers/Data";
 import useStore from "../providers/Store";
 import { TouchableOpacity, Text, View, Button } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
+import Workouts from "../db/model/Workout";
 import database from "../db";
+import Exercises from "../db/model/Exercises";
 
 export default function ExerciseList() {
   const { setWorkout, selectedWorkout, setSelectedWorkout } = useStore();
   const [selectedExercises, setSelectedExercises] = useState([]);
+
+  function handleAddWorkout() {
+    database.write(async () => {
+      await database.get<Workouts>("workouts").create((workout) => {
+        workout.name = selectedWorkout.name;
+        workout.exercises = selectedExercises;
+      });
+    });
+  }
 
   const handlePress = (item) => {
     if (!selectedExercises.includes(item)) {
@@ -17,33 +28,20 @@ export default function ExerciseList() {
       setSelectedExercises((prev) => prev.filter((e) => e !== item));
     }
   };
+
   useEffect(() => {
     console.log(selectedExercises);
   }, [selectedExercises]);
+
   const handleSaveWorkout = () => {
     setWorkout({
       ...selectedWorkout,
       exercises: selectedExercises,
     });
-    onWrite();
+    handleAddWorkout();
     setSelectedWorkout(null);
     setSelectedExercises([]);
-
     router.push("/workouts/three");
-  };
-
-  const onWrite = async () => {
-    const workoutsCollection = database.get("workouts");
-
-    await database.write(async () => {
-      await workoutsCollection.create((workout) => {
-        workout.name = selectedWorkout.name;
-      });
-    });
-    const exercise = await database.get("exercises").create((exercise) => {
-      exercise.workout.set(selectedWorkout.id);
-      exercise.name = selectedExercises[0].name;
-    });
   };
 
   const ExerciseListCard = ({ item }) => {

@@ -1,4 +1,3 @@
-// model/schema.js
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export default appSchema({
@@ -13,10 +12,7 @@ export default appSchema({
     }),
     tableSchema({
       name: "exercises",
-      columns: [
-        { name: "name", type: "string" },
-        { name: "workout_id", type: "string", isIndexed: true },
-      ],
+      columns: [{ name: "name", type: "string" }],
     }),
   ],
 });

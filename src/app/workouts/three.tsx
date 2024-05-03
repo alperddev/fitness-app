@@ -1,4 +1,4 @@
-import Workouts from "@/src/components/workouts";
+import Workouts from "../../components/Workouts";
 import React from "react";
 import { View, Text } from "react-native";
 export default function App() {
