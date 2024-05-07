@@ -4,22 +4,11 @@ import useStore from "../providers/Store";
 import { TouchableOpacity, Text, View, Button } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import Workouts from "../db/model/Workout";
-import database from "../db";
-import Exercises from "../db/model/Exercises";
+import { db } from "../app/(tabs)";
 
 export default function ExerciseList() {
   const { setWorkout, selectedWorkout, setSelectedWorkout } = useStore();
   const [selectedExercises, setSelectedExercises] = useState([]);
-
-  function handleAddWorkout() {
-    database.write(async () => {
-      await database.get<Workouts>("workouts").create((workout) => {
-        workout.name = selectedWorkout.name;
-        workout.exercises = selectedExercises;
-      });
-    });
-  }
 
   const handlePress = (item) => {
     if (!selectedExercises.includes(item)) {
@@ -33,12 +22,45 @@ export default function ExerciseList() {
     console.log(selectedExercises);
   }, [selectedExercises]);
 
+  const saveToSqlite = () => {
+    db.transaction((tx) => {
+      // Save workout
+      tx.executeSql(
+        "INSERT INTO workouts (name) VALUES (?)",
+        [selectedWorkout.name],
+        (_, results) => {
+          console.log("Workout saved:", results.insertId);
+          const workoutId = results.insertId;
+
+          // Save exercises
+          selectedExercises.forEach((exercise) => {
+            tx.executeSql(
+              "INSERT INTO exercises (workout_id, name, looplength) VALUES (?, ?, ?)",
+              [workoutId, exercise.name, exercise.looplength || 0],
+              (_, results) => {
+                console.log("Exercise saved:", results.rowsAffected);
+              },
+              (_, error) => {
+                console.error("Error saving exercise:", error);
+                return true; // Return true to indicate the error is handled
+              }
+            );
+          });
+        },
+        (_, error) => {
+          console.error("Error saving workout:", error);
+          return true; // Return true to indicate the error is handled
+        }
+      );
+    });
+  };
+
   const handleSaveWorkout = () => {
+    saveToSqlite();
     setWorkout({
       ...selectedWorkout,
       exercises: selectedExercises,
     });
-    handleAddWorkout();
     setSelectedWorkout(null);
     setSelectedExercises([]);
     router.push("/workouts/three");

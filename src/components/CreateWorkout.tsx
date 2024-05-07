@@ -38,6 +38,7 @@ export default function CreateWorkout() {
   return (
     <View style={{ flex: 1 }}>
       <TextInput
+        placeholderTextColor={"white"}
         style={{
           borderColor: "white",
           color: "white",
