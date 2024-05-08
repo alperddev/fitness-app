@@ -1,41 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, FlatList, Button } from "react-native";
-import { db } from "../app/(tabs)"; // Import your SQLite database instance here
+import { db } from "../app/(tabs)";
 
 export default function SavedWorkouts() {
   const [savedWorkouts, setSavedWorkouts] = useState([]);
-  const fetchWorkout = () => {
-    // Fetch saved workouts and their exercises from SQLite database
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM workouts",
-        [],
-        (_, { rows }) => {
-          const workouts = rows._array;
-          // Fetch exercises for each workout
-          workouts.forEach((workout, index) => {
-            tx.executeSql(
-              "SELECT * FROM exercises WHERE workout_id = ?",
-              [workout.id],
-              (_, { rows }) => {
-                workouts[index].exercises = rows._array;
-                if (index === workouts.length - 1) {
-                  setSavedWorkouts(workouts);
-                }
-              },
-              (_, error) => {
-                console.error("Error fetching exercises for workout:", error);
-                return true; // Indicate that the error has been handled
-              }
-            );
-          });
-        },
-        (_, error) => {
-          console.error("Error fetching saved workouts:", error);
-          return true; // Indicate that the error has been handled
-        }
-      );
-    });
+  const fetchWorkout = async () => {
+    try {
+      const workouts: { id: number; name: string; exercises: any[] }[] = await (
+        await db
+      ).getAllAsync("SELECT * FROM workouts");
+
+      for (let i = 0; i < workouts.length; i++) {
+        const exercises = await (
+          await db
+        ).getAllAsync("SELECT * FROM exercises WHERE workout_id = ?", [
+          workouts[i].id,
+        ]);
+        workouts[i].exercises = exercises;
+      }
+
+      setSavedWorkouts(workouts);
+      console.log("Saved workouts fetched successfully.");
+    } catch (error) {
+      console.error("Error fetching saved workouts:", error);
+    }
   };
   useEffect(() => {
     fetchWorkout();

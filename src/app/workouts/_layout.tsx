@@ -7,6 +7,7 @@ export default function TabLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="two" />
       <Stack.Screen name="three" />
+      <Stack.Screen name="four" />
     </Stack>
   );
 }

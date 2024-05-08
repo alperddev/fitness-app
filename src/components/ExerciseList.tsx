@@ -21,38 +21,31 @@ export default function ExerciseList() {
   useEffect(() => {
     console.log(selectedExercises);
   }, [selectedExercises]);
-
-  const saveToSqlite = () => {
-    db.transaction((tx) => {
-      // Save workout
-      tx.executeSql(
+  const saveToSqlite = async () => {
+    try {
+      // Inserting workout
+      const workoutInsertResult = await (
+        await db
+      ).runAsync(
         "INSERT INTO workouts (name) VALUES (?)",
-        [selectedWorkout.name],
-        (_, results) => {
-          console.log("Workout saved:", results.insertId);
-          const workoutId = results.insertId;
-
-          // Save exercises
-          selectedExercises.forEach((exercise) => {
-            tx.executeSql(
-              "INSERT INTO exercises (workout_id, name, looplength) VALUES (?, ?, ?)",
-              [workoutId, exercise.name, exercise.looplength || 0],
-              (_, results) => {
-                console.log("Exercise saved:", results.rowsAffected);
-              },
-              (_, error) => {
-                console.error("Error saving exercise:", error);
-                return true; // Return true to indicate the error is handled
-              }
-            );
-          });
-        },
-        (_, error) => {
-          console.error("Error saving workout:", error);
-          return true; // Return true to indicate the error is handled
-        }
+        selectedWorkout.name
       );
-    });
+      const workoutId = workoutInsertResult.lastInsertRowId;
+
+      // Inserting exercises
+      for (const exercise of selectedExercises) {
+        await (
+          await db
+        ).runAsync(
+          "INSERT INTO exercises (workout_id, name, looplength) VALUES (?, ?, ?)",
+          [workoutId, exercise.name, exercise.looplength || 0]
+        );
+      }
+
+      console.log("Workout and exercises saved successfully.");
+    } catch (error) {
+      console.error("Error saving to SQLite:", error);
+    }
   };
 
   const handleSaveWorkout = () => {
