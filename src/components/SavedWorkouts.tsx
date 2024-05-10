@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, FlatList, Button } from "react-native";
+import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
 import { db } from "../app/(tabs)";
 
 export default function SavedWorkouts() {
   const [savedWorkouts, setSavedWorkouts] = useState([]);
   const fetchWorkout = async () => {
     try {
-      const workouts: { id: number; name: string; exercises: any[] }[] = await (
-        await db
-      ).getAllAsync("SELECT * FROM workouts");
+      const workouts: {
+        id: number;
+        name: string;
+        sets: number;
+        reps: number;
+        exercises: any[];
+      }[] = await (await db).getAllAsync("SELECT * FROM workouts");
 
       for (let i = 0; i < workouts.length; i++) {
         const exercises = await (
@@ -20,17 +24,31 @@ export default function SavedWorkouts() {
       }
 
       setSavedWorkouts(workouts);
-      console.log("Saved workouts fetched successfully.");
+      // console.log("Saved workouts fetched successfully.");
     } catch (error) {
-      console.error("Error fetching saved workouts:", error);
+      // console.error("Error fetching saved workouts:", error);
     }
   };
   useEffect(() => {
     fetchWorkout();
   }, []);
 
+  const removeWorkout = async (workoutId) => {
+    try {
+      await (
+        await db
+      ).runAsync("DELETE FROM workouts WHERE id = ?", [workoutId]);
+      // console.log("Workout deleted successfully.");
+      fetchWorkout();
+    } catch (error) {
+      // console.error("Error deleting workout:", error);
+    }
+  };
   const renderWorkoutItem = ({ item }) => (
-    <View style={{ marginVertical: 10 }}>
+    <TouchableOpacity
+      onPress={() => removeWorkout(item.id)}
+      style={{ marginVertical: 10, alignItems: "center" }}
+    >
       <Text style={{ color: "white" }}>{item.name}</Text>
       <FlatList
         data={item.exercises}
@@ -38,13 +56,12 @@ export default function SavedWorkouts() {
         renderItem={({ item: exercise }) => (
           <View style={{ marginLeft: 20 }}>
             <Text style={{ color: "white" }}>{exercise.name}</Text>
-            <Text style={{ color: "white" }}>
-              Loop Length: {exercise.looplength}
-            </Text>
+            <Text style={{ color: "white" }}>{exercise.sets}</Text>
+            <Text style={{ color: "white" }}>{exercise.reps}</Text>
           </View>
         )}
       />
-    </View>
+    </TouchableOpacity>
   );
 
   return (

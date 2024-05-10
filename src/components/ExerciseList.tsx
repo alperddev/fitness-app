@@ -7,39 +7,33 @@ import { router } from "expo-router";
 import { db } from "../app/(tabs)";
 
 export default function ExerciseList() {
-  const { setWorkout, selectedWorkout, setSelectedWorkout } = useStore();
+  const { workoutStore, setWorkoutStore } = useStore();
   const [selectedExercises, setSelectedExercises] = useState([]);
 
   const handlePress = (item) => {
     if (!selectedExercises.includes(item)) {
       setSelectedExercises((prev) => [...prev, item]);
+      console.log(selectedExercises);
     } else {
       setSelectedExercises((prev) => prev.filter((e) => e !== item));
+      console.log(selectedExercises);
     }
   };
 
-  useEffect(() => {
-    console.log(selectedExercises);
-  }, [selectedExercises]);
   const saveToSqlite = async () => {
     try {
-      // Inserting workout
       const workoutInsertResult = await (
         await db
-      ).runAsync(
-        "INSERT INTO workouts (name) VALUES (?)",
-        selectedWorkout.name
-      );
+      ).runAsync("INSERT INTO workouts (name) VALUES (?)", workoutStore.name);
       const workoutId = workoutInsertResult.lastInsertRowId;
 
-      // Inserting exercises
       for (const exercise of selectedExercises) {
         await (
           await db
-        ).runAsync(
-          "INSERT INTO exercises (workout_id, name, looplength) VALUES (?, ?, ?)",
-          [workoutId, exercise.name, exercise.looplength || 0]
-        );
+        ).runAsync("INSERT INTO exercises (workout_id, name) VALUES (?, ?)", [
+          workoutId,
+          exercise.name,
+        ]);
       }
 
       console.log("Workout and exercises saved successfully.");
@@ -50,18 +44,13 @@ export default function ExerciseList() {
 
   const handleSaveWorkout = () => {
     saveToSqlite();
-    setWorkout({
-      ...selectedWorkout,
-      exercises: selectedExercises,
-    });
-    setSelectedWorkout(null);
+    setWorkoutStore({ ...workoutStore, exercises: selectedExercises });
     setSelectedExercises([]);
     router.push("/workouts/three");
   };
 
   const ExerciseListCard = ({ item }) => {
-    const isSelected = selectedExercises.includes(item);
-    const backgroundColor = isSelected ? "red" : "blue";
+    const isActive = selectedExercises.includes(item);
 
     return (
       <TouchableOpacity
@@ -70,8 +59,8 @@ export default function ExerciseList() {
         }}
         style={{
           borderRadius: 10,
+          backgroundColor: isActive ? "green" : "black",
           borderWidth: 1,
-          backgroundColor,
           padding: 10,
           margin: 5,
         }}
@@ -87,7 +76,7 @@ export default function ExerciseList() {
     );
   };
 
-  return selectedWorkout === null ? (
+  return workoutStore === null ? (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text style={{ color: "white" }}>Please select a workout</Text>
     </View>
@@ -109,10 +98,10 @@ export default function ExerciseList() {
         }}
       >
         <FlashList
+          estimatedItemSize={50}
           data={Data}
           renderItem={({ item }) => <ExerciseListCard item={item} />}
           keyExtractor={(item) => item.id}
-          estimatedItemSize={30}
           extraData={selectedExercises}
         />
       </View>

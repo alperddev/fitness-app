@@ -40,10 +40,10 @@ export default function App() {
         DROP TABLE IF EXISTS workouts;
         DROP TABLE IF EXISTS exercises;
       `);
-
-      console.log("Database cleared successfully.");
+      createTable();
+      // console.log("Database cleared successfully.");
     } catch (error) {
-      console.error("Error clearing database:", error);
+      // console.error("Error clearing database:", error);
     }
   };
   return (
