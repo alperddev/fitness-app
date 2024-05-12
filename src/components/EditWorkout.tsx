@@ -1,88 +1,75 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useStore from "../providers/Store";
-import { Text, View, Button, FlatList } from "react-native";
+import { Text, View, Button, FlatList, TextInput } from "react-native";
 import { router } from "expo-router";
-import { db } from "../app/(tabs)";
-import Slider from "@react-native-community/slider";
+import saveWorkout from "./sqlite/saveWorkout";
 
 export default function EditWorkout() {
-  const { workoutStore, setWorkoutStore } = useStore();
-  useEffect(() => {
-    setExercises(workoutStore.exercises);
-  }, [workoutStore]);
+  const { workoutStore, clearWorkoutStore } = useStore();
 
   const [exercises, setExercises] = useState([]);
-
-  const saveToSqlite = async () => {
-    try {
-      const workoutInsertResult = await (
-        await db
-      ).runAsync("INSERT INTO workouts (name) VALUES (?)", workoutStore.name);
-      const workoutId = workoutInsertResult.lastInsertRowId;
-
-      for (const exercise of exercises) {
-        await (
-          await db
-        ).runAsync(
-          "INSERT INTO exercises (workout_id, name, sets, reps) VALUES (?, ? ,?, ?)",
-          [workoutId, exercise.name, exercise.sets, exercise.reps]
-        );
-      }
-
-      console.log("Workout and exercises saved successfully.");
-    } catch (error) {
-      console.error("Error saving to SQLite:", error);
-    }
-  };
+  useEffect(() => {
+    setExercises(workoutStore.exercises);
+  }, []);
 
   const handleSaveWorkout = () => {
-    saveToSqlite();
-    router.push("/");
+    saveWorkout(workoutStore, exercises);
+    clearWorkoutStore();
+    router.push("/two");
+  };
+  const handleSetsChange = (text, exerciseId) => {
+    setExercises((prevExercises) =>
+      prevExercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? { ...exercise, sets: text.replace(/[^0-9]/g, "") }
+          : exercise
+      )
+    );
   };
 
-  const handleSetsChange = useCallback(
-    (value, index) => {
-      const newExercises = [...exercises];
-      newExercises[index].sets = value;
-      setExercises(newExercises);
-    },
-    [exercises]
-  );
+  const handleRepsChange = (text, exerciseId) => {
+    setExercises((prevExercises) =>
+      prevExercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? { ...exercise, reps: text.replace(/[^0-9]/g, "") }
+          : exercise
+      )
+    );
+  };
 
-  const handleRepsChange = useCallback(
-    (value, index) => {
-      const newExercises = [...exercises];
-      newExercises[index].reps = value;
-      setExercises(newExercises);
-    },
-    [exercises]
-  );
-  const ExerciseListCard = ({ item, index }) => {
+  const ExerciseListCard = ({ item }) => {
+    const [sets, setSets] = useState(item.sets);
+    const [reps, setReps] = useState(item.reps);
+    const handleSets = () => {
+      handleSetsChange(sets, item.id);
+    };
+    const handleReps = () => {
+      handleRepsChange(reps, item.id);
+    };
+
     return (
       <View style={{ borderRadius: 10, padding: 10, alignSelf: "center" }}>
         <Text style={{ color: "white" }}>
           {item.name} Sets: {item.sets} Reps: {item.reps}
         </Text>
-
-        <Slider
-          style={{ marginVertical: 10 }}
-          value={item.sets}
-          onValueChange={(value) => handleSetsChange(value, index)}
-          step={1}
-          minimumValue={1}
-          maximumValue={30}
-          maximumTrackTintColor="white"
-          minimumTrackTintColor="white"
+        <TextInput
+          style={{ color: "white" }}
+          placeholderTextColor="white"
+          keyboardType="numeric"
+          placeholder="Sets"
+          value={sets}
+          onChangeText={(text) => setSets(text)}
+          onEndEditing={handleSets}
         />
-        <Slider
-          style={{ marginVertical: 10 }}
-          value={item.reps}
-          onValueChange={(value) => handleRepsChange(value, index)}
-          step={1}
-          minimumValue={1}
-          maximumValue={30}
-          maximumTrackTintColor="white"
-          minimumTrackTintColor="white"
+
+        <TextInput
+          style={{ color: "white" }}
+          placeholderTextColor="white"
+          keyboardType="numeric"
+          placeholder="Reps"
+          value={reps}
+          onChangeText={(text) => setReps(text)}
+          onEndEditing={handleReps}
         />
       </View>
     );
@@ -92,13 +79,10 @@ export default function EditWorkout() {
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <FlatList
         data={exercises}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
-          <ExerciseListCard item={item} index={index} />
-        )}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => <ExerciseListCard item={item} />}
       />
       <Button title="Save Workout" onPress={handleSaveWorkout} />
-      <Button title="log" onPress={() => console.log(exercises)} />
     </View>
   );
 }

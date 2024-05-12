@@ -1,52 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
-import { db } from "../app/(tabs)";
+import fetchWorkout from "./sqlite/fetchWorkout";
+import removeWorkout from "./sqlite/removeWorkout";
 
 export default function SavedWorkouts() {
   const [savedWorkouts, setSavedWorkouts] = useState([]);
-  const fetchWorkout = async () => {
-    try {
-      const workouts: {
-        id: number;
-        name: string;
-        sets: number;
-        reps: number;
-        exercises: any[];
-      }[] = await (await db).getAllAsync("SELECT * FROM workouts");
 
-      for (let i = 0; i < workouts.length; i++) {
-        const exercises = await (
-          await db
-        ).getAllAsync("SELECT * FROM exercises WHERE workout_id = ?", [
-          workouts[i].id,
-        ]);
-        workouts[i].exercises = exercises;
-      }
-
-      setSavedWorkouts(workouts);
-      // console.log("Saved workouts fetched successfully.");
-    } catch (error) {
-      // console.error("Error fetching saved workouts:", error);
-    }
-  };
   useEffect(() => {
-    fetchWorkout();
+    handleFetch();
   }, []);
-
-  const removeWorkout = async (workoutId) => {
+  const handleFetch = async () => {
     try {
-      await (
-        await db
-      ).runAsync("DELETE FROM workouts WHERE id = ?", [workoutId]);
-      // console.log("Workout deleted successfully.");
-      fetchWorkout();
+      const workouts = await fetchWorkout();
+      setSavedWorkouts(workouts);
     } catch (error) {
-      // console.error("Error deleting workout:", error);
+      console.error("Error fetching saved workouts:", error);
     }
   };
+  const handleRemove = async (workoutId) => {
+    try {
+      await removeWorkout(workoutId);
+      handleFetch();
+    } catch (error) {
+      console.error("Error removing workout:", error);
+    }
+  };
+
   const renderWorkoutItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => removeWorkout(item.id)}
+      onLongPress={() => handleRemove(item.id)}
+      onPress={() => console.log(item)}
       style={{ marginVertical: 10, alignItems: "center" }}
     >
       <Text style={{ color: "white" }}>{item.name}</Text>
@@ -71,14 +54,14 @@ export default function SavedWorkouts() {
           <FlatList
             data={savedWorkouts}
             renderItem={renderWorkoutItem}
-            keyExtractor={(workout) => workout.id.toString()}
+            keyExtractor={(workout) => workout.id}
           />
-          <Button title="fetch" onPress={() => fetchWorkout()} />
+          <Button title="fetch" onPress={() => handleFetch()} />
         </View>
       ) : (
         <View>
           <Text style={{ color: "white" }}>No saved workouts found.</Text>
-          <Button title="fetch" onPress={() => fetchWorkout()} />
+          <Button title="fetch" onPress={() => handleFetch()} />
         </View>
       )}
     </View>
