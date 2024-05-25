@@ -18,25 +18,28 @@ export default function EditWorkout() {
     router.push("/two");
   };
   const handleSetsChange = (text, exerciseId) => {
-    setExercises((prevExercises) =>
-      prevExercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? { ...exercise, sets: text.replace(/[^0-9]/g, "") }
-          : exercise
-      )
-    );
+    if (text !== undefined) {
+      setExercises((prevExercises) =>
+        prevExercises.map((exercise) =>
+          exercise.id === exerciseId
+            ? { ...exercise, sets: text.replace(/[^0-9]/g, "") }
+            : exercise
+        )
+      );
+    }
   };
 
   const handleRepsChange = (text, exerciseId) => {
-    setExercises((prevExercises) =>
-      prevExercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? { ...exercise, reps: text.replace(/[^0-9]/g, "") }
-          : exercise
-      )
-    );
+    if (text !== undefined) {
+      setExercises((prevExercises) =>
+        prevExercises.map((exercise) =>
+          exercise.id === exerciseId
+            ? { ...exercise, reps: text.replace(/[^0-9]/g, "") }
+            : exercise
+        )
+      );
+    }
   };
-
   const ExerciseListCard = ({ item }) => {
     const [sets, setSets] = useState(item.sets);
     const [reps, setReps] = useState(item.reps);

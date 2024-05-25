@@ -15,8 +15,6 @@ const saveWorkout = async (workoutStore, exercises) => {
         [workoutId, exercise.name, exercise.sets, exercise.reps]
       );
     }
-
-    console.log("Workout and exercises saved successfully.");
   } catch (error) {
     console.error("Error saving to SQLite:", error);
   }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, TextInput, Button } from "react-native";
-import Slider from "@react-native-community/slider";
 
 import * as Crypto from "expo-crypto";
 import { router } from "expo-router";
@@ -18,9 +17,6 @@ export default function CreateWorkout() {
 
   function handleNameChange(name: string) {
     setWorkout({ ...workout, name: name });
-  }
-  function handleLoopLengthChange(loopLength: number) {
-    setWorkout({ ...workout, loopLength: loopLength });
   }
   function handleAddWorkout() {
     router.push("/workouts/two");
@@ -41,13 +37,6 @@ export default function CreateWorkout() {
         value={workout.name}
         onChangeText={(value) => handleNameChange(value)}
         placeholder="Workout Name"
-      />
-      <Slider
-        value={workout.loopLength}
-        onValueChange={(value) => handleLoopLengthChange(value)}
-        step={1}
-        minimumValue={1}
-        maximumValue={30}
       />
 
       <Button title="Add Workout" onPress={handleAddWorkout} />
