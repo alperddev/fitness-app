@@ -7,6 +7,7 @@ const fetchWorkout = async () => {
       name: string;
       sets: number;
       reps: number;
+      weight: number;
       exercises: any[];
     }[] = await (await db).getAllAsync("SELECT * FROM workouts");
 

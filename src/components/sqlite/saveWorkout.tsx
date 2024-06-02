@@ -1,5 +1,4 @@
 import { db } from "@/src/app/(tabs)";
-
 const saveWorkout = async (workoutStore, exercises) => {
   try {
     const workoutInsertResult = await (
@@ -8,12 +7,22 @@ const saveWorkout = async (workoutStore, exercises) => {
     const workoutId = workoutInsertResult.lastInsertRowId;
 
     for (const exercise of exercises) {
-      await (
+      const exerciseInsertResult = await (
         await db
-      ).runAsync(
-        "INSERT INTO exercises (workout_id, name, sets, reps) VALUES (?, ? ,?, ?)",
-        [workoutId, exercise.name, exercise.sets, exercise.reps]
-      );
+      ).runAsync("INSERT INTO exercises (workout_id, name) VALUES (?, ?)", [
+        workoutId,
+        exercise.name,
+      ]);
+      const exerciseId = exerciseInsertResult.lastInsertRowId;
+
+      for (const set of exercise.sets) {
+        await (
+          await db
+        ).runAsync(
+          "INSERT INTO sets (exercise_id, reps, weight) VALUES (?, ?, ?)",
+          [exerciseId, set.reps, set.weight]
+        );
+      }
     }
   } catch (error) {
     console.error("Error saving to SQLite:", error);

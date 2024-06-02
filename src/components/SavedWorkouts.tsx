@@ -41,6 +41,7 @@ export default function SavedWorkouts() {
             <Text style={{ color: "white" }}>{exercise.name}</Text>
             <Text style={{ color: "white" }}>{exercise.sets}</Text>
             <Text style={{ color: "white" }}>{exercise.reps}</Text>
+            <Text style={{ color: "white" }}>{exercise.weight}</Text>
           </View>
         )}
       />

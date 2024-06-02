@@ -27,6 +27,18 @@ export default function App() {
       looplength integer,
       foreign key(workout_id) references workouts(id) on delete cascade );
       `);
+    await (
+      await db
+    ).execAsync(`
+      create table if not exists sets (
+        id integer primary key autoincrement,
+        exercise_id integer not null,
+        reps integer,
+        weight integer,
+        weight_increase integer,
+        looplength integer,
+        foreign key(exercise_id) references exercises(id) on delete cascade );
+        `);
   };
   useEffect(() => {
     createTable();

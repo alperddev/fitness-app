@@ -26,6 +26,7 @@ export default function EditWorkout() {
             : exercise
         )
       );
+      console.log(exercises);
     }
   };
 
@@ -38,11 +39,28 @@ export default function EditWorkout() {
             : exercise
         )
       );
+
+      console.log(exercises);
+    }
+  };
+
+  const handleWeightChange = (text, exerciseId) => {
+    if (text !== undefined) {
+      setExercises((prevExercises) =>
+        prevExercises.map((exercise) =>
+          exercise.id === exerciseId
+            ? { ...exercise, weight: text.replace(/[^0-9]/g, "") }
+            : exercise
+        )
+      );
+      console.log(exercises);
     }
   };
   const ExerciseListCard = ({ item }) => {
     const [sets, setSets] = useState(item.sets);
-    const [reps, setReps] = useState(item.reps);
+    const [reps, setReps] = useState(item.sets.reps);
+    const [weight, setWeight] = useState(item.sets.weight);
+
     const handleSets = () => {
       handleSetsChange(sets, item.id);
     };
@@ -50,30 +68,65 @@ export default function EditWorkout() {
       handleRepsChange(reps, item.id);
     };
 
-    return (
-      <View style={{ borderRadius: 10, padding: 10, alignSelf: "center" }}>
-        <Text style={{ color: "white" }}>
-          {item.name} Sets: {item.sets} Reps: {item.reps}
-        </Text>
-        <TextInput
-          style={{ color: "white" }}
-          placeholderTextColor="white"
-          keyboardType="numeric"
-          placeholder="Sets"
-          value={sets}
-          onChangeText={(text) => setSets(text)}
-          onEndEditing={handleSets}
-        />
+    const handleWeight = () => {
+      handleWeightChange(weight, item.id);
+    };
 
-        <TextInput
-          style={{ color: "white" }}
-          placeholderTextColor="white"
-          keyboardType="numeric"
-          placeholder="Reps"
-          value={reps}
-          onChangeText={(text) => setReps(text)}
-          onEndEditing={handleReps}
-        />
+    const SetsListCard = () => {
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            style={{
+              color: "white",
+              borderColor: "white",
+              borderWidth: 1,
+              borderRadius: 10,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              marginVertical: 10,
+              width: "50%",
+            }}
+            placeholderTextColor="white"
+            keyboardType="numeric"
+            placeholder="Reps"
+            value={reps}
+            onChangeText={(text) => setReps(text)}
+            onEndEditing={handleReps}
+          />
+
+          <TextInput
+            style={{
+              color: "white",
+              borderColor: "white",
+              borderWidth: 1,
+              borderRadius: 10,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              width: "50%",
+              marginVertical: 10,
+            }}
+            placeholderTextColor="white"
+            keyboardType="numeric"
+            placeholder="Weight"
+            value={weight}
+            onChangeText={(text) => setWeight(text)}
+            onEndEditing={handleWeight}
+          />
+        </View>
+      );
+    };
+    return (
+      <View
+        style={{
+          borderRadius: 10,
+          padding: 10,
+          alignSelf: "center",
+          width: "100%",
+        }}
+      >
+        <Text style={{ color: "white" }}>
+          {item.name} Sets: {item.sets} Reps: {item.reps} Weight: {item.weight}
+        </Text>
       </View>
     );
   };
