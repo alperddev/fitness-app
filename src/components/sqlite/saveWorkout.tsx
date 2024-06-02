@@ -1,4 +1,5 @@
-import { db } from "@/src/app/(tabs)";
+import { db } from ".";
+
 const saveWorkout = async (workoutStore, exercises) => {
   try {
     const workoutInsertResult = await (

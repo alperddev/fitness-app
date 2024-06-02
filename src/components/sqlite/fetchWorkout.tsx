@@ -1,4 +1,4 @@
-import { db } from "@/src/app/(tabs)";
+import { db } from ".";
 
 const fetchWorkout = async () => {
   try {
