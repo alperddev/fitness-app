@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
-import fetchWorkout from "./sqlite/fetchWorkout";
-import removeWorkout from "./sqlite/removeWorkout";
+import { fetchWorkout } from "./sqlite";
+import { removeWorkout } from "./sqlite";
 
 export default function SavedWorkouts() {
   const [savedWorkouts, setSavedWorkouts] = useState([]);

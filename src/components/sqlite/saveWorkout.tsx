@@ -1,5 +1,6 @@
-import { db } from ".";
+import * as SQLite from "expo-sqlite";
 
+const db = SQLite.openDatabaseAsync("workouts.db");
 const saveWorkout = async (workoutStore, exercises) => {
   try {
     const workoutInsertResult = await (

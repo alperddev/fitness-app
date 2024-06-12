@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Data } from "../providers/Data";
-import useStore from "../providers/Store";
+import { Data } from "../../providers/Data";
+import useStore from "../../providers/Store";
 import { Text, View, Button } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";

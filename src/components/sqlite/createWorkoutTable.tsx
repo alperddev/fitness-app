@@ -1,6 +1,7 @@
-import { db } from ".";
+import * as SQLite from "expo-sqlite";
 
-export const createTable = async () => {
+const db = SQLite.openDatabaseAsync("workouts.db");
+const createWorkoutTable = async () => {
   await (
     await db
   ).execAsync(`
@@ -36,3 +37,5 @@ export const createTable = async () => {
         foreign key(exercise_id) references exercises(id) on delete cascade );
         `);
 };
+
+export default createWorkoutTable;

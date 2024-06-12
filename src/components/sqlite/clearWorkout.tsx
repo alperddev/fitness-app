@@ -1,7 +1,9 @@
-import { db } from ".";
-import { createTable } from "./createWorkoutTable";
+import createWorkoutTable from "./createWorkoutTable";
+import * as SQLite from "expo-sqlite";
 
-export const clearDatabase = async () => {
+const db = SQLite.openDatabaseAsync("workouts.db");
+
+const clearWorkout = async () => {
   try {
     await (
       await db
@@ -9,9 +11,10 @@ export const clearDatabase = async () => {
         DROP TABLE IF EXISTS workouts;
         DROP TABLE IF EXISTS exercises;
       `);
-    createTable();
+    createWorkoutTable();
     // console.log("Database cleared successfully.");
   } catch (error) {
     // console.error("Error clearing database:", error);
   }
 };
+export default clearWorkout;
